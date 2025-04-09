@@ -1,5 +1,9 @@
 import plotly.graph_objects as go
 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
+
 def plot_drift(feature_name, train_data, test_data, drift_points=[]):
     # Create the figure
     fig = go.Figure()
@@ -26,17 +30,15 @@ def plot_drift(feature_name, train_data, test_data, drift_points=[]):
         showlegend=True,
     ))
     
-
     # Add drift points
     fig.add_trace(go.Scatter(
-        x=[t + len(train_data) for t in drift_points],
+        x=[i + len(train_data) for i in drift_points],
         y=[test_data[feature_name][i] for i in drift_points],
         mode='markers',
         name='Drift Detected',
         marker=dict(color='red', size=10),
         showlegend=True,
     ))
-
 
     # Update layout
     fig.update_layout(
@@ -48,3 +50,19 @@ def plot_drift(feature_name, train_data, test_data, drift_points=[]):
 
     # Show the plot
     fig.show()
+    
+# Auxiliary function to plot the data
+def plot_data(stream, dist_a, dist_b, drifts=None):
+   fig = plt.figure(figsize=(7,3), tight_layout=True)
+   gs = gridspec.GridSpec(1, 2, width_ratios=[3, 1])
+   ax1, ax2 = plt.subplot(gs[0]), plt.subplot(gs[1])
+   ax1.grid()
+   ax1.plot(stream, label='Stream')
+   ax2.grid(axis='y')
+   ax2.hist(dist_a, label=r'$dist_a$')
+   ax2.hist(dist_b, label=r'$dist_b$')
+#    ax2.hist(dist_c, label=r'$dist_c$')
+   if drifts is not None:
+       for drift_detected in drifts:
+           ax1.axvline(drift_detected, color='red')
+   plt.show()
