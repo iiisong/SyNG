@@ -47,7 +47,16 @@ def periodic(data, feature_name, location, duration, period, func, after=True, o
             else:
                 data.loc[p - duration: p, feature_name] = data.loc[p - duration: p, feature_name].apply(func)
             p -= period
-    
     return data
 
 # degenerate is a random func
+def degenerate(data, feature_name, start, duration, func, on_row=False):
+    data = data.copy()
+    end = min(start + duration, len(data))
+    
+    if on_row:
+        data.loc[start:end] = data.loc[start:end].apply(func, axis=1)
+    else:
+        data.loc[start:end, feature_name] = data.loc[start:end, feature_name].apply(func)
+    
+    return data
