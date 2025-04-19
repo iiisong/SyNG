@@ -3,6 +3,10 @@ import plotly.graph_objects as go
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+import sdv
+from sdv.single_table import GaussianCopulaSynthesizer
+from sdv.metadata import SingleTableMetadata
+import pandas as pd
 
 def plot_drift(feature_name, train_data, test_data, drift_points=[]):
     # Create the figure
@@ -66,3 +70,17 @@ def plot_data(stream, dist_a, dist_b, drifts=None):
        for drift_detected in drifts:
            ax1.axvline(drift_detected, color='red')
    plt.show()
+  
+def generate_synthetic_from_df(df, n_samples=500):
+    # Define metadata for SDV
+    metadata = SingleTableMetadata()
+    metadata.detect_from_dataframe(data=df)
+    
+    # Fit SDV model
+    model = GaussianCopulaSynthesizer(metadata)
+    model.fit(df)
+    
+    # Sample new data
+    synthetic_df = model.sample(n_samples)
+
+    return synthetic_df

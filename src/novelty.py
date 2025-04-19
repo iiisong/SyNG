@@ -10,6 +10,26 @@ def ephemeral(data, feature_name, start, duration, func, on_row=False):
         data.loc[start : end, feature_name] = data.loc[start : end, feature_name].apply(func)
     return data
 
+def ephemeral_alt(data, feature_name, start, duration, func, on_row=False):
+    """
+    Insert an ephemeral novelty into the dataset.
+
+    Args:
+        data (pd.DataFrame): The dataset to insert the novelty into.
+        feature_name (str): The name of the feature to modify.
+        start (int): The starting index of the novelty.
+        duration (int): The duration of the novelty.
+        func (callable): The function to apply to the feature during the novelty period.
+        on_row (bool, optional): Whether to apply the function to each row individually. Defaults to False.
+
+    Returns:
+        pd.DataFrame: The modified dataset.
+    """
+    end = start + duration
+    # Use iloc for integer-location based indexing to avoid issues with non-unique index
+    data.iloc[start : end, data.columns.get_loc(feature_name)] = data.iloc[start : end, data.columns.get_loc(feature_name)].apply(func)
+    return data
+
 # persistant
 def persistant(data, feature_name, location, func, after=True, on_row=False):
     data = data.copy()
