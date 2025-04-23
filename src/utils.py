@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -66,3 +67,14 @@ def plot_data(stream, dist_a, dist_b, drifts=None):
        for drift_detected in drifts:
            ax1.axvline(drift_detected, color='red')
    plt.show()
+   
+def dataset_to_df(dataset, count=None):
+    if not count:
+        count = len(list(dataset))
+    data_list = [{**x, 'value': y} for x, y in dataset.take(count)]
+    return pd.DataFrame(data_list)
+
+def df_to_dataset(df):
+    df_nonvalue = df.loc[:, df.columns != 'value']
+    df_value = df['value']
+    return list(zip(df_nonvalue.to_dict(orient='records'), df_value.to_list()))
